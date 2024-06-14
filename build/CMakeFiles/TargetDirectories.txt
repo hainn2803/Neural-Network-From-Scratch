@@ -1,3 +1,0 @@
-/home/ubuntu/learn_cuda/neural_network/build/CMakeFiles/rebuild_cache.dir
-/home/ubuntu/learn_cuda/neural_network/build/CMakeFiles/edit_cache.dir
-/home/ubuntu/learn_cuda/neural_network/build/CMakeFiles/opt_utils.dir
