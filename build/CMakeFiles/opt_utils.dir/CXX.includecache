@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ubuntu/learn_cuda/neural_network/ops_utils.cpp
+cmath
+-
+algorithm
+-
+chrono
+-
+iostream
+-
+random
+-
+valarray
+-
+vector
+-
+cassert
+-
+
