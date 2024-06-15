@@ -16,7 +16,7 @@ namespace neural_network {
 
     template<typename T>
     class Neural_Network {
-    public:
+    private:
 
         std::string architecture_name;
         std::valarray<int> num_dims;
@@ -59,14 +59,7 @@ namespace neural_network {
             }
         }
 
-        std::vector<std::valarray<T>> forward(const std::vector<std::valarray<T>>& x_batch) {
-            std::vector<std::valarray<T>> output = x_batch;
-            for(int i = 0; i < layer_objects.size(); i ++) {
-                output = layer_objects[i]->forward(output);
-            }
-            return output;
-        }
-
+        public:
 
         Neural_Network(std::string architecture, std::valarray<int> num_dims) {
             std::vector<std::string> arch_layers;
@@ -84,6 +77,20 @@ namespace neural_network {
             this->_make_model();
         }
 
+        std::vector<std::valarray<T>> forward(const std::vector<std::valarray<T>>& x_batch) {
+            std::vector<std::valarray<T>> output = x_batch;
+            for(int i = 0; i < layer_objects.size(); i ++) {
+                output = layer_objects[i]->forward(output);
+            }
+            return output;
+        }
+
+        void backward() {
+            vector<std::valarray<T>> dX = ops_utils::init_matrix::generate_ones_matrix(1);
+            for(int i = layer_objects.size() - 1; i >= 0; i --) {
+                dX = layer_objects[i]->backward(dX);
+            }
+        }
 
     };
 }

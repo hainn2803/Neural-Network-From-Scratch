@@ -56,6 +56,18 @@ namespace ops_utils {
             return zero_valarray;
         }
 
+        template <typename T>
+        std::vector<std::valarray<T>> generate_ones_matrix(size_t rows, size_t cols) {
+            std::valarray<T> one_valarray(static_cast<T>(1), cols);
+            std::vector<std::valarray<T>> matrix(rows, one_valarray);
+            return matrix;
+        }
+
+        template <typename T>
+        std::valarray<T> generate_ones_matrix(size_t cols) {
+            std::valarray<T> one_valarray(static_cast<T>(1), cols);
+            return one_valarray;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,6 +347,30 @@ namespace ops_utils {
         for (int i = 0; i < shape_W.first; i ++) {
             for (int j = 0; j < shape_W.second; j ++) {
                 result[j][i] = W[i][j];
+            }
+        }
+        return result;
+    }
+
+    template <typename T>
+    std::valarray<T> reduced_sum(const std::vector<std::valarray<T>>& A, int dim = 0) {
+        std::pair<size_t, size_t> shape_A = ops_utils::get_shape<T>(A);
+        std::valarray<T> result;
+        if (dim == 0) {
+            result = ops_utils::init_matrix::generate_zeros_matrix<T>(shape_A.second);
+        }
+        else {
+            result = ops_utils::init_matrix::generate_zeros_matrix<T>(shape_A.first);
+        }
+
+        for (int i = 0; i < shape_A.first; i ++) {
+            for (int j = 0; j < shape_A.second; j ++) {
+                if (dim == 0) {
+                    result[j] += A[i][j];
+                }
+                else {
+                    result[i] += A[i][j];
+                }
             }
         }
         return result;
