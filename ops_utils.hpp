@@ -15,11 +15,25 @@ namespace ops_utils {
     namespace init_matrix {
 
         template <typename T>
-        std::vector<std::valarray<T>> generate_uniform_matrix(size_t rows, size_t cols, T min_value, T max_value) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
+        std::vector<std::valarray<T>> generate_uniform_matrix(size_t rows, size_t cols, T min_value = -1.0, T max_value = 1.0, unsigned int seed = 28) {
+            std::mt19937 gen(seed);
             std::uniform_real_distribution<> distrib(min_value, max_value);
             std::vector<std::valarray<T>> matrix(rows, std::valarray<T>(cols));
+            for (size_t i = 0; i < rows; ++i) {
+                for (size_t j = 0; j < cols; ++j) {
+                    matrix[i][j] = distrib(gen);
+                }
+            }
+            return matrix;
+        }
+
+        template <typename T>
+        std::vector<std::valarray<T>> He_initialization(size_t rows, size_t cols, unsigned int seed = 28) {
+            std::mt19937 gen(seed);
+            double max_value = std::sqrt(6.0) / std::sqrt(rows + cols);
+            std::uniform_real_distribution<T> distrib(-max_value, max_value);
+            std::vector<std::valarray<T>> matrix(rows, std::valarray<T>(cols));
+            
             for (size_t i = 0; i < rows; ++i) {
                 for (size_t j = 0; j < cols; ++j) {
                     matrix[i][j] = distrib(gen);
@@ -29,12 +43,18 @@ namespace ops_utils {
             return matrix;
         }
 
-        std::vector<std::valarray<double>> generate_zeros_matrix(size_t rows, size_t cols) {
-            std::valarray<double> zero_valarray(0.0, cols);
-            std::vector<std::valarray<double>> matrix(rows, zero_valarray);
+        template <typename T>
+        std::vector<std::valarray<T>> generate_zeros_matrix(size_t rows, size_t cols) {
+            std::valarray<T> zero_valarray(static_cast<T>(0), cols);
+            std::vector<std::valarray<T>> matrix(rows, zero_valarray);
             return matrix;
         }
 
+        template <typename T>
+        std::valarray<T> generate_zeros_matrix(size_t cols) {
+            std::valarray<T> zero_valarray(static_cast<T>(0), cols);
+            return zero_valarray;
+        }
 
     }
 
@@ -76,6 +96,13 @@ namespace ops_utils {
         }
     }
 
+    template <typename T>
+    void print_2D_matrix(const std::valarray<T>& A) {
+        for(size_t i = 0; i < A.size(); ++i) {
+            std::cout << A[i] << " ";
+        }
+        std::cout << std::endl;
+    }
     // function for check if it is valid 2D matrix or not
     template <typename T>
     bool is_2D_matrix(const std::vector<std::valarray<T>>& A) {
@@ -165,7 +192,7 @@ namespace ops_utils {
     std::vector<std::valarray<T>> add(const std::vector<std::valarray<T>>& A, const T &val) {
         assert(is_2D_matrix(A) && "Input is not a valid 2D matrix.");
         std::vector<std::valarray<T>> A_copied = A;
-        for (auto &v : A_copied) { 
+        for (auto &v: A_copied) { 
             v = v + val;
         }
         return A_copied;
@@ -191,7 +218,7 @@ namespace ops_utils {
 
     template <typename T>
     std::valarray<T> add(const std::valarray<T>& a, const std::valarray<T>& b) {
-        size_t dim_a = ops_utils:get_shape(a);
+        size_t dim_a = ops_utils::get_shape(a);
         size_t dim_b = ops_utils::get_shape(b);
         assert(dim_b == dim_a && "a and b must be in same dimension.");
         std::valarray<double> result(0.0, dim_a);
@@ -242,7 +269,7 @@ namespace ops_utils {
     template <typename T>
     std::valarray<T> subtract(const std::valarray<T>& a, const std::valarray<T>& b) {
 
-        size_t dim_a = ops_utils:get_shape(a);
+        size_t dim_a = ops_utils::get_shape(a);
 
         size_t dim_b = ops_utils::get_shape(b);
         assert(dim_b == dim_a && "a and b must be in same dimension.");
@@ -264,7 +291,7 @@ namespace ops_utils {
 
         assert((shape_a.second == shape_b.first) && "Second axis of first matrix must be equal to first axis of second matrix.");
 
-        std::vector<std::valarray<T>> result = init_matrix::generate_zeros_matrix(shape_a.first, shape_b.second);
+        std::vector<std::valarray<T>> result = init_matrix::generate_zeros_matrix<T>(shape_a.first, shape_b.second);
 
         for (int i = 0; i < shape_a.first; i ++) {
             for (int j = 0; j < shape_b.second; j ++) {
@@ -276,33 +303,40 @@ namespace ops_utils {
         return result;
     }
 
-    template <typename T>
-    std::valarray<T> matmul(const std::vector<std::valarray<T>>& W, const std::valarray<T>& x) {
-        // x must have shape [D1] and W must have shape p[D2, D1], matmul(W, x) must results in [D2]
-        std::pair<size_t, size_t> shape_W = ops_utils::get_shape(W);
-        size_t dim_x = ops_utils:get_shape(x);
-        assert(shape_W.second == dim_x && "Cannot multiply W and x.");
-        std::valarray<T> result(shape_W.first);
-        for (int i = 0; i < shape_W.first; i ++) {
-            result[i] = dot_product(W[i], x)
-        }
-        return result;
-    }
-
     template<typename T>
     T dot_product(const std::valarray<T>& a, const std::valarray<T>& b) {
         size_t size_a = get_shape(a);
         size_t size_b = get_shape(b);
         assert(size_a == size_b && "a and b must be in same size.");
-
         T result = 0.0;
-
         for (int i = 0; i < size_a; i ++) {
             result += (a[i] * b[i]);
         }
-
         return result;
     }
 
+    template <typename T>
+    std::valarray<T> matmul(const std::vector<std::valarray<T>>& W, const std::valarray<T>& x) {
+        // x must have shape [D1] and W must have shape [D2, D1], matmul(W, x) must results in [D2]
+        std::pair<size_t, size_t> shape_W = ops_utils::get_shape(W);
+        size_t dim_x = ops_utils::get_shape(x);
+        assert(shape_W.second == dim_x && "Cannot multiply W and x.");
+        std::valarray<T> result(shape_W.first);
+        for (int i = 0; i < shape_W.first; i ++) {
+            result[i] = ops_utils::dot_product<T>(W[i], x);
+        }
+        return result;
+    }
 
+    template <typename T>
+    std::vector<std::valarray<T>> transpose(const std::vector<std::valarray<T>>& W) {
+        std::pair<size_t, size_t> shape_W = ops_utils::get_shape(W);
+        std::vector<std::valarray<T>> result(shape_W.second, std::valarray<T>(shape_W.first));
+        for (int i = 0; i < shape_W.first; i ++) {
+            for (int j = 0; j < shape_W.second; j ++) {
+                result[j][i] = W[i][j];
+            }
+        }
+        return result;
+    }
 }
