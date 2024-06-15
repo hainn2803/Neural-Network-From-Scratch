@@ -1,5 +1,6 @@
-#include "ops_utils.hpp"
-#include "data_utils.hpp"
+// #include "ops_utils.hpp"
+// #include "data_utils.hpp"
+#include "nn.hpp"
 #include <iostream>
 
 int main() {
@@ -13,22 +14,25 @@ int main() {
     //     std::cout << "Shape of random_matrix: (" << mat_shape.first << ", " << mat_shape.second << ")" << std::endl;
     // }
 
-    size_t rows_a = 3;
-    size_t cols_a = 4;
-    size_t rows_b = 4;
-    size_t cols_b = 5;
-    double min_value = 0.0;
-    double max_value = 10.0;
-    double scalar = 2.0;
+    // size_t rows_a = 3;
+    // size_t cols_a = 4;
+    // size_t rows_b = 4;
+    // size_t cols_b = 5;
+    // double min_value = 0.0;
+    // double max_value = 10.0;
+    // double scalar = 2.0;
 
-    // Generate random matrix
-    auto A = ops_utils::init_matrix::generate_uniform_matrix(rows_a, cols_a, min_value, max_value);
-    auto B = ops_utils::init_matrix::generate_uniform_matrix(rows_b, cols_b, min_value, max_value);
+    // // Generate random matrix
+    // auto A = ops_utils::init_matrix::generate_uniform_matrix(rows_a, cols_a, min_value, max_value);
+    // auto B = ops_utils::init_matrix::generate_uniform_matrix(rows_b, cols_b, min_value, max_value);
 
-    auto C = ops_utils::matmul(A, B);
+    // auto C = ops_utils::matmul(A, B);
 
-    std::pair<size_t, size_t> mat_shape = ops_utils::get_shape(C);
-    std::cout << "Shape of random_matrix: (" << mat_shape.first << ", " << mat_shape.second << ")" << std::endl;
+    // std::pair<size_t, size_t> mat_shape = ops_utils::get_shape(C);
+    // std::cout << "Shape of random_matrix: (" << mat_shape.first << ", " << mat_shape.second << ")" << std::endl;
+
+    std::string archi = "linear-sigmoid-linear-sigmoid";
+    neural_network::Neural_Network<double> nn(archi);
 
     return 0;
 }

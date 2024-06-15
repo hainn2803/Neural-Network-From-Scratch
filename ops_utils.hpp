@@ -191,15 +191,12 @@ namespace ops_utils {
 
     template <typename T>
     std::valarray<T> add(const std::valarray<T>& a, const std::valarray<T>& b) {
-
         size_t dim_a = ops_utils:get_shape(a);
-
         size_t dim_b = ops_utils::get_shape(b);
         assert(dim_b == dim_a && "a and b must be in same dimension.");
-
         std::valarray<double> result(0.0, dim_a);
         for (int i = 0; i < dim_a; i ++) {
-            result[i]
+            result[i] = a[i] + b[i];
         }
         return result;
     }
@@ -243,6 +240,21 @@ namespace ops_utils {
     }
 
     template <typename T>
+    std::valarray<T> subtract(const std::valarray<T>& a, const std::valarray<T>& b) {
+
+        size_t dim_a = ops_utils:get_shape(a);
+
+        size_t dim_b = ops_utils::get_shape(b);
+        assert(dim_b == dim_a && "a and b must be in same dimension.");
+
+        std::valarray<double> result(0.0, dim_a);
+        for (int i = 0; i < dim_a; i ++) {
+            result[i] = a[i] - b[i];
+        }
+        return result;
+    }
+
+    template <typename T>
     std::vector<std::valarray<T>> matmul(const std::vector<std::valarray<T>>& A, const std::vector<std::valarray<T>>& B) {
         assert(is_2D_matrix(A) && "Input is not a valid 2D matrix.");
         assert(is_2D_matrix(B) && "Input is not a valid 2D matrix.");
@@ -265,13 +277,12 @@ namespace ops_utils {
     }
 
     template <typename T>
-    std::vector<std::valarray<T>> matmul(const std::vector<std::valarray<T>>& W, const std::valarray<T>& x) {
+    std::valarray<T> matmul(const std::vector<std::valarray<T>>& W, const std::valarray<T>& x) {
         // x must have shape [D1] and W must have shape p[D2, D1], matmul(W, x) must results in [D2]
         std::pair<size_t, size_t> shape_W = ops_utils::get_shape(W);
         size_t dim_x = ops_utils:get_shape(x);
         assert(shape_W.second == dim_x && "Cannot multiply W and x.");
         std::valarray<T> result(shape_W.first);
-
         for (int i = 0; i < shape_W.first; i ++) {
             result[i] = dot_product(W[i], x)
         }
