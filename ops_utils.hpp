@@ -251,6 +251,16 @@ namespace ops_utils {
     }
 
     template <typename T>
+    std::valarray<T> subtract(const std::valarray<T>& A, const T &val) {
+        assert(is_2D_matrix(A) && "Input is not a valid 2D matrix.");
+        std::valarray<T> A_copied = A;
+        for (auto &v : A_copied) { 
+            v = v - val;
+        }
+        return A_copied;
+    }
+
+    template <typename T>
     std::vector<std::valarray<T>> subtract(const T &val, const std::vector<std::valarray<T>>& A) {
         assert(is_2D_matrix(A) && "Input is not a valid 2D matrix.");
         std::vector<std::valarray<T>> A_copied = A;
@@ -372,6 +382,35 @@ namespace ops_utils {
                     result[i] += A[i][j];
                 }
             }
+        }
+        return result;
+    }
+
+    template <typename T>
+    std::pair<T, std::size_t> find_max_and_argmax(const std::valarray<T>& x) {
+        if (x.size() == 0) {
+            throw std::invalid_argument("Input valarray must not be empty.");
+        }
+
+        T max_value = x[0];
+        std::size_t max_index = 0;
+
+        for (std::size_t i = 1; i < x.size(); ++i) {
+            if (x[i] > max_value) {
+                max_value = x[i];
+                max_index = i;
+            }
+        }
+
+        return std::make_pair(max_value, max_index);
+    }
+
+    template<typename T>
+    T sum(const std::valarray<T>& a) {
+        size_t size_a = get_shape(a);
+        T result = 0.0;
+        for (int i = 0; i < size_a; i ++) {
+            result += a[i];
         }
         return result;
     }
